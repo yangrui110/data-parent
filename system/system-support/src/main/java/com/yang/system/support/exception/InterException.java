@@ -1,5 +1,8 @@
 package com.yang.system.support.exception;
 
+/**
+ * 自定义的内部异常
+ * */
 public class InterException extends RuntimeException {
 
     private String message;
