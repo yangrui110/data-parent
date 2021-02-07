@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.yang</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <modules>
+        <module>concrete1</module>
+        <module>baseframe</module>
+        <module>system</module>
+    </modules>
+
+    <packaging>pom</packaging>
+
+    <properties>
+        <spring-cloud>Greenwich.SR1</spring-cloud>
+        <spring.boot>2.1.9.RELEASE</spring.boot>
+        <spring-cloud-nacos-config>2.1.0.RELEASE</spring-cloud-nacos-config>
+        <spring-cloud-openfeign>2.1.1.RELEASE</spring-cloud-openfeign>
+        <spring-cloud-nacos-discovery>2.1.0.RELEASE</spring-cloud-nacos-discovery>
+    </properties>
+    <dependencyManagement>
+        <dependencies>
+            <!--springcloud的基础依赖包-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud}</version>
+                <type>pom</type>
+                <scope>provided</scope>
+            </dependency>
+            <!--feign的包-->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-starter-openfeign</artifactId>
+                <version>${spring-cloud-openfeign}</version>
+            </dependency>
+            <!--nacos 的客户端包-->
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+                <version>${spring-cloud-nacos-discovery}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+                <version>${spring-cloud-nacos-config}</version>
+            </dependency>
+            <!--springboot的基础依赖-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>

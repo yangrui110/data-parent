@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: system
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      config:
+        group: system-support
+        file-extension: yml
+        server-addr: 212.64.50.170:8848
+      discovery:
+        server-addr: 212.64.50.170:8848
