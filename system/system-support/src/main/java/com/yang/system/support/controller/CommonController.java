@@ -22,7 +22,7 @@ import java.util.List;
  **/
 @Controller
 @RequestMapping("common")
-public class TestController {
+public class CommonController {
 
     @Autowired
     CommonService commonService;
