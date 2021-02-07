@@ -27,10 +27,43 @@ public class TestController {
     @PostMapping("/findPageList")
     public List findPageList(@RequestBody EntityParams entityParams){
         List entityList = commonService.findList(entityParams);
-        System.out.println(entityList);
         return entityList;
     }
 
+    @ResponseBody
+    @PostMapping("insert")
+    public void insert(@RequestBody EntityParams entityParams){
+        commonService.insert(entityParams);
+    }
 
+    @ResponseBody
+    @PostMapping("batchInsert")
+    public void batchInsert(@RequestBody List<EntityParams> entityParams){
+        commonService.batchInsert(entityParams);
+    }
+
+    @ResponseBody
+    @PostMapping("update")
+    public void update(@RequestBody EntityParams entityParams){
+        commonService.update(entityParams);
+    }
+
+    @ResponseBody
+    @PostMapping("batchUpdate")
+    public void update(@RequestBody List<EntityParams> entityParams){
+        commonService.batchUpdate(entityParams);
+    }
+
+    @ResponseBody
+    @PostMapping("delete")
+    public void delete(@RequestBody EntityParams entityParams){
+        commonService.delete(entityParams);
+    }
+
+    @ResponseBody
+    @PostMapping("batchDelete")
+    public void batchDelete(@RequestBody List<EntityParams> entityParams){
+        commonService.batchDelete(entityParams);
+    }
 
 }
