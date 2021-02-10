@@ -69,7 +69,7 @@ public class MybatisPlushGenerator {
         StrategyConfig strategyConfig = new StrategyConfig();
         strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel);
         strategyConfig.setNaming(NamingStrategy.underline_to_camel);
-        strategyConfig.setInclude("user","role","user_role","button","menu","menu_button","role_permission");
+        strategyConfig.setInclude("service_info");
         strategyConfig.setEntityLombokModel(true);
         strategyConfig.setEntityBooleanColumnRemoveIsPrefix(true);
         generator.setStrategy(strategyConfig);
@@ -111,10 +111,10 @@ public class MybatisPlushGenerator {
         TemplateConfig templateConfig = new TemplateConfig();
         templateConfig.setXml(null); // 控制默认不生成xml文件
         templateConfig.setEntity(null); // 控制默认不生成entity文件
-        templateConfig.setMapper(null);
+        /*templateConfig.setMapper(null);
         templateConfig.setController(null);
         templateConfig.setService(null);
-        templateConfig.setServiceImpl(null);
+        templateConfig.setServiceImpl(null);*/
         generator.setTemplate(templateConfig);
         // 执行反向代码生成
         generator.execute();
