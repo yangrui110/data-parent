@@ -32,11 +32,6 @@ public class ResponseResult<T> {
         return new ResponseResult(200,"访问成功");
     }
 
-    public static ResponseResult success(String message){
-
-        return new ResponseResult(200,message);
-    }
-
     public static <T> ResponseResult success(T data){
         return new ResponseResult(200,"访问成功",data);
     }

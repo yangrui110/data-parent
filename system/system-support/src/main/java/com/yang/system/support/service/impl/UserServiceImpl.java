@@ -1,5 +1,6 @@
 package com.yang.system.support.service.impl;
 
+import com.alibaba.nacos.common.util.Md5Utils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yang.system.client.entity.*;
@@ -7,10 +8,13 @@ import com.yang.system.support.constant.DrStatus;
 import com.yang.system.support.constant.PermissionType;
 import com.yang.system.support.dao.UserDao;
 import com.yang.system.support.service.*;
+import com.yang.system.support.util.IdUtils;
+import com.yang.system.support.util.RandomNumAndChar;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,5 +81,20 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         // 3、获取到菜单对应的详细信息
         List<Button> buttons = buttonService.list(Wrappers.query(new Button()).eq("dr", DrStatus.NORMAL));
         return buttons;
+    }
+
+    @Override
+    public void addUser(User user) {
+        user.setId(IdUtils.nextId());
+        user.setDr(DrStatus.NORMAL);
+        String numAndChar = RandomNumAndChar.getNumAndChar(4);
+        user.setSalt(numAndChar);
+        user.setCreateTime(LocalDateTime.now());
+        user.setUpdateTime(LocalDateTime.now());
+        // 设置密码为MD5加密
+        byte[] bytes = (user.getPassword() + numAndChar).getBytes();
+        String md5 = Md5Utils.getMD5(bytes);
+        user.setPassword(md5);
+        this.save(user);
     }
 }

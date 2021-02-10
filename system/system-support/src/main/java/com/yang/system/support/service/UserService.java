@@ -26,4 +26,9 @@ public interface UserService extends IService<User> {
      * */
     List<Button> getUserButtons(String userId);
 
+    /**
+     * 新增一个用户
+     * */
+    void addUser(User user);
+
 }

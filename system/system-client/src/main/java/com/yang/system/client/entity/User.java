@@ -51,5 +51,7 @@ public class User implements Serializable {
     @ApiModelProperty(value = "密码")
     private String password;
 
+    @ApiModelProperty(value = "密码加密的盐")
+    private String salt;
 
 }

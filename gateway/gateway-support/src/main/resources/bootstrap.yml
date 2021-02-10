@@ -8,6 +8,6 @@ spring:
       config:
         group: gateway-support
         file-extension: yml
-        server-addr: 127.0.0.1:8848
+        server-addr: 212.64.50.170:8848
       discovery:
-        server-addr: 127.0.0.1:8848
+        server-addr: 212.64.50.170:8848
