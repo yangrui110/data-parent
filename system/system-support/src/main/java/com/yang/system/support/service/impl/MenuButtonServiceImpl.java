@@ -1,12 +1,21 @@
 package com.yang.system.support.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.yang.system.client.entity.Button;
 import com.yang.system.client.entity.MenuButton;
+import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuButtonVo;
 import com.yang.system.support.constant.DrStatus;
 import com.yang.system.support.dao.MenuButtonDao;
+import com.yang.system.support.resp.RequestPage;
+import com.yang.system.support.service.ButtonService;
 import com.yang.system.support.service.MenuButtonService;
+import com.yang.system.support.util.IdUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -25,6 +35,10 @@ import java.util.List;
  */
 @Service
 public class MenuButtonServiceImpl extends ServiceImpl<MenuButtonDao, MenuButton> implements MenuButtonService {
+
+    @Autowired
+    private ButtonService buttonService;
+
 
     @Transactional
     @Override
@@ -50,5 +64,100 @@ public class MenuButtonServiceImpl extends ServiceImpl<MenuButtonDao, MenuButton
             menuButtons.add(button);
         }
         this.saveBatch(menuButtons);
+    }
+
+    @Override
+    public PageResult<MenuButton> listPage(RequestPage<MenuButtonVo> menuButton) {
+        // 1、加载菜单
+        MenuButton data = menuButton.getData();
+        if(data == null||data.getMenuId()==null) {
+            return new PageResult<>();
+        }
+        QueryWrapper<MenuButton> query = Wrappers.query(new MenuButton());
+        if(data.getId()!=null){
+            query.eq("id",data.getId());
+        }
+        if(data.getMenuId()!=null){
+            query.eq("menu_id",data.getMenuId());
+        }
+        if(data.getButtonId()!=null){
+            query.eq("button_id",data.getButtonId());
+        }
+        if(data.getButtonName()!=null){
+            query.like("button_name",data.getButtonName());
+        }
+        if(data.getButtonCode()!=null){
+            query.like("button_code",data.getButtonCode());
+        }
+        Page<MenuButton> page = this.page(new Page<>(menuButton.getPage(), menuButton.getSize()), query);
+        PageResult<MenuButton> pageResult = new PageResult<>(page.getTotal(), page.getRecords());
+        return pageResult;
+    }
+
+    @Transactional
+    @Override
+    public void add(MenuButtonVo menuButtonVo) {
+        // 1、新增button表
+        Button button = new Button();
+        button.setButtonCode(menuButtonVo.getButtonCode());
+        button.setButtonName(menuButtonVo.getButtonName());
+        button.setCreateTime(LocalDateTime.now());
+        button.setUpdateTime(LocalDateTime.now());
+        button.setId(IdUtils.nextId());
+        button.setDr(DrStatus.NORMAL);
+        buttonService.save(button);
+        // 2、新增menu_button表
+        MenuButton menuButton = new MenuButton();
+        menuButton.setButtonCode(menuButtonVo.getButtonCode());
+        menuButton.setButtonName(menuButtonVo.getButtonName());
+        menuButton.setCreateTime(LocalDateTime.now());
+        menuButton.setUpdateTime(LocalDateTime.now());
+        menuButton.setButtonId(button.getId());
+        menuButton.setId(IdUtils.nextId());
+        menuButton.setDr(DrStatus.NORMAL);
+        menuButton.setMenuId(menuButtonVo.getMenuId());
+        this.save(menuButton);
+
+    }
+
+    @Transactional
+    @Override
+    public void update(MenuButtonVo menuButtonVo) {
+        // 1、新增button表
+        Button button = new Button();
+        button.setButtonCode(menuButtonVo.getButtonCode());
+        button.setButtonName(menuButtonVo.getButtonName());
+        button.setCreateTime(LocalDateTime.now());
+        button.setUpdateTime(LocalDateTime.now());
+        buttonService.updateById(button);
+        // 2、新增menu_button表
+        MenuButton menuButton = new MenuButton();
+        menuButton.setButtonCode(menuButtonVo.getButtonCode());
+        menuButton.setButtonName(menuButtonVo.getButtonName());
+        menuButton.setCreateTime(LocalDateTime.now());
+        menuButton.setUpdateTime(LocalDateTime.now());
+        menuButton.setButtonId(button.getId());
+        menuButton.setMenuId(menuButtonVo.getMenuId());
+        this.updateById(menuButton);
+    }
+
+    @Transactional
+    @Override
+    public void delete(MenuButton menuButton) {
+        // 1、删除menu_button表
+        this.removeById(menuButton.getId());
+        // 2、删除button表
+        buttonService.remove(Wrappers.query(new Button()).eq("id", menuButton.getButtonId()));
+    }
+
+    @Transactional
+    @Override
+    public void batchDelete(List<MenuButton> menuButtons) {
+        if(menuButtons.size()==0) return;
+        List<Long> menuApiIds = menuButtons.stream().map(MenuButton::getId).collect(Collectors.toList());
+        this.removeByIds(menuApiIds);
+
+        List<Long> apiIds = menuButtons.stream().map(MenuButton::getButtonId).collect(Collectors.toList());
+        buttonService.removeByIds(apiIds);
     }
 }

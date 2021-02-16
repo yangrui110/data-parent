@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
  * </p>
  *
  * @author yangrui
- * @since 2021-02-09
+ * @since 2021-02-13
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -47,6 +47,12 @@ public class MenuButton implements Serializable {
 
     @ApiModelProperty(value = "按钮Id")
     private Long buttonId;
+
+    @ApiModelProperty(value = "按钮名称")
+    private String buttonName;
+
+    @ApiModelProperty(value = "按钮编码")
+    private String buttonCode;
 
 
 }

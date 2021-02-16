@@ -10,17 +10,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 菜单表
+ * 菜单对应的接口
  * </p>
  *
  * @author yangrui
- * @since 2021-02-11
+ * @since 2021-02-14
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="Menu对象", description="菜单表")
-public class Menu implements Serializable {
+@ApiModel(value="MenuApi对象", description="菜单对应的接口")
+public class MenuApi implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,22 +42,11 @@ public class Menu implements Serializable {
     @ApiModelProperty(value = "删除标记，1：已删除，0未删除")
     private Integer dr;
 
-    @ApiModelProperty(value = "菜单名")
-    private String menuName;
+    @ApiModelProperty(value = "api表主键")
+    private Long apiId;
 
-    @ApiModelProperty(value = "菜单编码")
-    private String menuCode;
+    @ApiModelProperty(value = "菜单表主键")
+    private Long menuId;
 
-    @ApiModelProperty(value = "菜单访问路径")
-    private String menuVisitPath;
-
-    @ApiModelProperty(value = "菜单组件")
-    private String component;
-
-    @ApiModelProperty(value = "上一级菜单Id")
-    private Long parentId;
-
-    @ApiModelProperty(value = "排序号")
-    private Integer sort;
 
 }

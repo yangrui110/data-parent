@@ -27,12 +27,6 @@ public class RolePermission implements Serializable {
     @ApiModelProperty(value = "主键")
     private Long id;
 
-    @ApiModelProperty(value = "主键")
-    private Long menId;
-
-    @ApiModelProperty(value = "主键")
-    private Long butId;
-
     @ApiModelProperty(value = "创建时间")
     private LocalDateTime createTime;
 
