@@ -1,11 +1,15 @@
 package com.yang.system.support.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Sequence;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yang.system.client.entity.ServiceInfo;
+import com.yang.system.client.resp.PageResult;
 import com.yang.system.support.constant.DrStatus;
 import com.yang.system.support.dao.ServiceInfoDao;
+import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.service.ServiceInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CachePut;
@@ -33,6 +37,14 @@ public class ServiceInfoServiceImpl extends ServiceImpl<ServiceInfoDao, ServiceI
         List<ServiceInfo> list = this.list(Wrappers.query(new ServiceInfo()).eq("dr", DrStatus.NORMAL));
         log.info("大小：{}",list.size());
         return list;
+    }
+
+    @Override
+    public PageResult<ServiceInfo> pageList(RequestPage<ServiceInfo> serviceInfoRequestPage) {
+        QueryWrapper<ServiceInfo> queryWrapper = Wrappers.query(new ServiceInfo()).eq("dr", DrStatus.NORMAL);
+        Page<ServiceInfo> page = this.page(new Page<>(), queryWrapper);
+        PageResult<ServiceInfo> pageResult = new PageResult<>(page.getTotal(), page.getRecords());
+        return pageResult;
     }
 
     @CachePut(cacheNames="gatewayRoutes",key="'gateway-routes'")

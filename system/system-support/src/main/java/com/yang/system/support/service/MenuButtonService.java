@@ -1,8 +1,10 @@
 package com.yang.system.support.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.entity.Button;
 import com.yang.system.client.entity.MenuButton;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuButtonSelect;
 import com.yang.system.client.vo.MenuButtonVo;
 import com.yang.system.support.resp.RequestPage;
 
@@ -17,6 +19,8 @@ import java.util.List;
  * @since 2021-02-09
  */
 public interface MenuButtonService extends IService<MenuButton> {
+
+    MenuButtonSelect listButtons(Long menuId,Long roleId);
 
     /**
      * 更新菜单对应的按钮信息

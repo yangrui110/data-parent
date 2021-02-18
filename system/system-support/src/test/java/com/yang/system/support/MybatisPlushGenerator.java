@@ -69,7 +69,7 @@ public class MybatisPlushGenerator {
         StrategyConfig strategyConfig = new StrategyConfig();
         strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel);
         strategyConfig.setNaming(NamingStrategy.underline_to_camel);
-        strategyConfig.setInclude("api","menu_api");
+        strategyConfig.setInclude("white_path");
         strategyConfig.setEntityLombokModel(true);
         strategyConfig.setEntityBooleanColumnRemoveIsPrefix(true);
         generator.setStrategy(strategyConfig);

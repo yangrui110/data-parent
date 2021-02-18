@@ -1,11 +1,14 @@
 package com.yang.system.support.controller;
 
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.yang.system.client.entity.Menu;
+import com.yang.system.client.vo.MenuTreeVo;
 import com.yang.system.support.constant.DrStatus;
 import com.yang.system.support.resp.ResponseResult;
 import com.yang.system.support.service.MenuService;
 import com.yang.system.support.util.IdUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import top.sanguohf.egg.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -28,6 +32,24 @@ public class MenuController {
 
     @Autowired
     private MenuService menuService;
+
+    /**
+     * 获取到所有的菜单列表
+     * */
+    @ResponseBody
+    @GetMapping("list")
+    public ResponseResult list(){
+        List<Menu> list = menuService.list(Wrappers.query(new Menu()).eq("dr",DrStatus.NORMAL));
+        ArrayList<MenuTreeVo> arrayList = new ArrayList<>();
+        for(Menu menu: list){
+            MenuTreeVo vo = new MenuTreeVo();
+            BeanUtils.copyProperties(menu,vo);
+            vo.setKey(menu.getId());
+            vo.setTitle(menu.getMenuName());
+            arrayList.add(vo);
+        }
+        return ResponseResult.success(arrayList);
+    }
 
     @ResponseBody
     @PostMapping("update")

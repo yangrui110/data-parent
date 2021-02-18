@@ -2,13 +2,18 @@ package com.yang.system.support.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
+import com.yang.system.client.entity.Api;
+import com.yang.system.client.entity.Role;
 import com.yang.system.client.entity.User;
+import com.yang.system.client.po.ModifyPassword;
 import com.yang.system.client.resp.PageResult;
 import com.yang.system.client.vo.MenuTreeVo;
 import com.yang.system.support.constant.DrStatus;
+import com.yang.system.support.exception.InterException;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.resp.ResponseResult;
 import com.yang.system.support.service.UserService;
+import com.yang.system.support.util.UserInfoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -46,8 +51,15 @@ public class UserController {
     @ResponseBody
     @GetMapping("getUserMenus")
     public ResponseResult getUserMenus(){
-        String userId = request.getHeader("Access-Token");
-        List<MenuTreeVo> userMenus = userService.getUserMenus(userId);
+        Long userId = UserInfoUtil.getUserId(request);
+        List<MenuTreeVo> userMenus = userService.getUserMenus(""+userId);
+        return ResponseResult.success(userMenus);
+    }
+
+    @ResponseBody
+    @GetMapping("getUserRoles")
+    public ResponseResult getUserRoles(@RequestParam String userId){
+        List<Role> userMenus = userService.getUserRoles(userId);
         return ResponseResult.success(userMenus);
     }
 
@@ -122,6 +134,15 @@ public class UserController {
         menu.setId(Long.parseLong(id));
         menu.setDr(DrStatus.DEL);
         userService.updateById(menu);
+        return ResponseResult.success();
+    }
+
+    @ResponseBody
+    @PostMapping("modifyPassword")
+    public ResponseResult modifyPassword(@RequestBody ModifyPassword modifyPassword){
+        Long userId = UserInfoUtil.getUserId(request);
+        modifyPassword.setUserId(userId);
+        userService.modifyPassword(modifyPassword);
         return ResponseResult.success();
     }
 

@@ -1,17 +1,22 @@
 package com.yang.system.support.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yang.system.client.entity.Api;
 import com.yang.system.client.entity.MenuApi;
+import com.yang.system.client.entity.RolePermission;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuApiSelect;
 import com.yang.system.client.vo.MenuApiVo;
 import com.yang.system.support.constant.DrStatus;
+import com.yang.system.support.constant.PermissionType;
 import com.yang.system.support.dao.MenuApiDao;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.service.ApiService;
 import com.yang.system.support.service.MenuApiService;
+import com.yang.system.support.service.RolePermissionService;
 import com.yang.system.support.service.ServiceInfoService;
 import com.yang.system.support.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +45,7 @@ public class MenuApiServiceImpl extends ServiceImpl<MenuApiDao, MenuApi> impleme
     private MenuApiDao menuApiDao;
 
     @Autowired
-    private ServiceInfoService serviceInfoService;
+    private RolePermissionService rolePermissionService;
 
     @Override
     public PageResult<MenuApiVo> getMenuApis(RequestPage<MenuApiVo> menuApiVo) {
@@ -87,8 +92,7 @@ public class MenuApiServiceImpl extends ServiceImpl<MenuApiDao, MenuApi> impleme
     public void add(MenuApiVo menuApiVo) {
         // 1、插入api表
         Api api = new Api();
-        api.setPath(menuApiVo.getPath());
-        api.setServiceId(menuApiVo.getServiceId());
+        api.setApiPath(menuApiVo.getApiPath());
         api.setId(IdUtils.nextId());
         api.setCreateTime(LocalDateTime.now());
         api.setUpdateTime(LocalDateTime.now());
@@ -109,8 +113,7 @@ public class MenuApiServiceImpl extends ServiceImpl<MenuApiDao, MenuApi> impleme
     public void update(MenuApiVo menuApiVo) {
         Api api = new Api();
         api.setDr(DrStatus.NORMAL);
-        api.setPath(menuApiVo.getPath());
-        api.setServiceId(menuApiVo.getServiceId());
+        api.setApiPath(menuApiVo.getApiPath());
         api.setUpdateTime(LocalDateTime.now());
         api.setId(menuApiVo.getApiId());
         apiService.updateById(api);
@@ -133,5 +136,29 @@ public class MenuApiServiceImpl extends ServiceImpl<MenuApiDao, MenuApi> impleme
 
         List<Long> apiIds = menuApis.stream().map(MenuApi::getApiId).collect(Collectors.toList());
         apiService.removeByIds(apiIds);
+    }
+
+    @Override
+    public MenuApiSelect listApiByRoleIdAndMenuId(Long menuId, Long roleId) {
+        MenuApiSelect apiSelect = new MenuApiSelect();
+        // 1、加载菜单对应的api
+        List<MenuApi> menuApis = this.list(Wrappers.query(new MenuApi()).eq("menu_id", menuId).eq("dr", DrStatus.NORMAL));
+        List<Long> apiIds = menuApis.stream().map(MenuApi::getApiId).collect(Collectors.toList());
+        List<Api> apis = apiService.list(Wrappers.query(new Api()).in("id", apiIds).eq("dr", DrStatus.NORMAL));
+        apiSelect.setMenuApis(apis);
+        // 2、加载角色对应的api
+        QueryWrapper<RolePermission> queryWrapper = Wrappers.query(new RolePermission())
+                .eq("dr", DrStatus.NORMAL)
+                .eq("role_id", roleId)
+                .in("permission_id",apiIds)
+                .eq("type", PermissionType.API);
+        List<RolePermission> permissions = rolePermissionService.list(queryWrapper);
+        List<Api> apiList = permissions.stream().map(item -> {
+            Api api = new Api();
+            api.setId(item.getPermissionId());
+            return api;
+        }).collect(Collectors.toList());
+        apiSelect.setRoleApis(apiList);
+        return apiSelect;
     }
 }

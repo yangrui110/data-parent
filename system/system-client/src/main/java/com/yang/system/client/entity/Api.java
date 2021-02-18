@@ -43,10 +43,7 @@ public class Api implements Serializable {
     private Integer dr;
 
     @ApiModelProperty(value = "api路径")
-    private String path;
-
-    @ApiModelProperty(value = "对应的服务")
-    private Long serviceId;
+    private String apiPath;
 
 
 }

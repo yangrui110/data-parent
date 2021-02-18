@@ -7,13 +7,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yang.system.client.entity.Button;
 import com.yang.system.client.entity.MenuButton;
+import com.yang.system.client.entity.RolePermission;
+import com.yang.system.client.po.RolePermissionSave;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuButtonSelect;
 import com.yang.system.client.vo.MenuButtonVo;
 import com.yang.system.support.constant.DrStatus;
+import com.yang.system.support.constant.PermissionType;
 import com.yang.system.support.dao.MenuButtonDao;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.service.ButtonService;
 import com.yang.system.support.service.MenuButtonService;
+import com.yang.system.support.service.RolePermissionService;
 import com.yang.system.support.util.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +44,35 @@ public class MenuButtonServiceImpl extends ServiceImpl<MenuButtonDao, MenuButton
     @Autowired
     private ButtonService buttonService;
 
+    @Autowired
+    private RolePermissionService rolePermissionService;
+
+    @Override
+    public MenuButtonSelect listButtons(Long menuId,Long roleId) {
+        // 1、获取菜单对应的按钮
+        MenuButtonSelect buttonSelect = new MenuButtonSelect();
+        List<MenuButton> list = this.list(Wrappers.query(new MenuButton()).eq("dr", DrStatus.NORMAL).eq("menu_id", menuId));
+        if(list.size()==0) return buttonSelect;
+        List<Long> buttonIds = list.stream().map(MenuButton::getButtonId).collect(Collectors.toList());
+        List<Button> buttons = buttonService.list(Wrappers.query(new Button()).eq("dr", DrStatus.NORMAL).in("id", buttonIds));
+        buttonSelect.setMenuButtons(buttons);
+        // 2、获取到角色对应的按钮
+        QueryWrapper<RolePermission> queryWrapper = Wrappers.query(new RolePermission())
+                .eq("dr", DrStatus.NORMAL)
+                .eq("role_id", roleId)
+                .eq("type", PermissionType.BUTTON)
+                .in("permission_id",buttonIds);
+        List<RolePermission> permissions = rolePermissionService.list(queryWrapper);
+        // 3、构造按钮
+        List<Button> permissionButtons = permissions.stream().map(item -> {
+            Button button = new Button();
+            button.setId(item.getPermissionId());
+            return button;
+        }).collect(Collectors.toList());
+        buttonSelect.setRoleButtons(permissionButtons);
+        buttonSelect.setMenuId(menuId);
+        return buttonSelect;
+    }
 
     @Transactional
     @Override

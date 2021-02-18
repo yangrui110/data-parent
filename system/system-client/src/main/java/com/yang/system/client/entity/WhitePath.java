@@ -10,17 +10,17 @@ import lombok.experimental.Accessors;
 
 /**
  * <p>
- * 角色表
+ * 路径访问白名单
  * </p>
  *
  * @author yangrui
- * @since 2021-02-09
+ * @since 2021-02-18
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@ApiModel(value="Role对象", description="角色表")
-public class Role implements Serializable {
+@ApiModel(value="WhitePath对象", description="路径访问白名单")
+public class WhitePath implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -42,13 +42,11 @@ public class Role implements Serializable {
     @ApiModelProperty(value = "删除标记，1：已删除，0未删除")
     private Integer dr;
 
-    @ApiModelProperty(value = "角色名称")
-    private String roleName;
+    @ApiModelProperty(value = "白名单路径")
+    private String whitePath;
 
-    @ApiModelProperty(value = "角色编码")
-    private String roleCode;
+    @ApiModelProperty(value = "启用：1，禁用：0")
+    private Integer enable;
 
-    @ApiModelProperty(value = "描述")
-    private String description;
 
 }

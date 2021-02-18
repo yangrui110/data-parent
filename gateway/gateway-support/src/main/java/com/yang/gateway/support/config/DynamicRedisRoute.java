@@ -1,6 +1,6 @@
 package com.yang.gateway.support.config;
 
-import com.yang.gateway.support.feign.ServiceInfoApi;
+import com.yang.gateway.support.feign.SystemFeignApi;
 import com.yang.system.client.entity.ServiceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.gateway.handler.predicate.PredicateDefinition;
@@ -24,7 +24,7 @@ import java.util.List;
 public class DynamicRedisRoute implements RouteDefinitionRepository {
 
     @Autowired
-    private ServiceInfoApi serviceInfoApi;
+    private SystemFeignApi serviceInfoApi;
 
     private List<RouteDefinition> routeDefinitions = new ArrayList();
 

@@ -3,6 +3,7 @@ package com.yang.system.support.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yang.system.client.entity.MenuApi;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuApiSelect;
 import com.yang.system.client.vo.MenuApiVo;
 import com.yang.system.support.resp.RequestPage;
 
@@ -38,4 +39,8 @@ public interface MenuApiService extends IService<MenuApi> {
      * 批量删除menu_api记录和api记录
      * */
     void batchDelete(List<MenuApi> menuApis);
+    /**
+     * 根据角色ID和菜单ID获取到对应的结果
+     * */
+    MenuApiSelect listApiByRoleIdAndMenuId(Long menuId, Long roleId);
 }

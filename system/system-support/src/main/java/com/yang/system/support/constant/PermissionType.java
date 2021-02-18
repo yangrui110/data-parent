@@ -8,4 +8,5 @@ package com.yang.system.support.constant;
 public class PermissionType {
     public static final int MENU = 0;
     public static final int BUTTON = 1;
+    public static final int API = 2;
 }

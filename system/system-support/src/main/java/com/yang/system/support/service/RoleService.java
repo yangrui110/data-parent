@@ -2,6 +2,8 @@ package com.yang.system.support.service;
 
 import com.yang.system.client.entity.Role;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.resp.PageResult;
+import com.yang.system.support.resp.RequestPage;
 
 import java.util.List;
 
@@ -24,4 +26,10 @@ public interface RoleService extends IService<Role> {
      * 删除多个角色
      * */
     void batchDeleteRoleByIds(List<Role> roleList);
+    /**
+     * 分页获取Role
+     * */
+    PageResult pageList(RequestPage<Role> menuButton);
+    void add(Role role);
+    void update(Role role);
 }

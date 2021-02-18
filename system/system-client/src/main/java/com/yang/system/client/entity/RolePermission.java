@@ -45,6 +45,9 @@ public class RolePermission implements Serializable {
     @ApiModelProperty(value = "权限Id，可以是MenuId，也可以是ButtonId")
     private Long permissionId;
 
+    @ApiModelProperty(value = "角色ID")
+    private Long roleId;
+
     @ApiModelProperty(value = "0:菜单，1：按钮")
     private Integer type;
 

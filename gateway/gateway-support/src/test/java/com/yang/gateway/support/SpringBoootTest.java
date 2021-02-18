@@ -1,7 +1,8 @@
 package com.yang.gateway.support;
 
-import com.yang.gateway.support.feign.ServiceInfoApi;
+import com.yang.gateway.support.feign.SystemFeignApi;
 import com.yang.system.client.entity.ServiceInfo;
+import com.yang.system.client.entity.WhitePath;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,14 @@ import java.util.List;
 public class SpringBoootTest {
 
     @Autowired
-    private ServiceInfoApi serviceInfoApi;
+    private SystemFeignApi serviceInfoApi;
 
     @Test
     public void test1(){
         List<ServiceInfo> serviceInfos = serviceInfoApi.listServiceInfos();
         System.out.println(serviceInfos);
+        List<WhitePath> whitePaths = serviceInfoApi.listWhitePath();
+        System.out.println(whitePaths);
     }
 
 }

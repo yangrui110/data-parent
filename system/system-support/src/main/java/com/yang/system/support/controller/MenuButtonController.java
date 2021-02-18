@@ -3,16 +3,14 @@ package com.yang.system.support.controller;
 
 import com.yang.system.client.entity.MenuButton;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuButtonSelect;
 import com.yang.system.client.vo.MenuButtonVo;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.resp.ResponseResult;
 import com.yang.system.support.service.MenuButtonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +29,15 @@ public class MenuButtonController {
     @Autowired
     private MenuButtonService menuButtonService;
 
+    /**
+     * 根据menuId获取到Button信息
+     * */
+    @ResponseBody
+    @GetMapping("listButtons")
+    public ResponseResult listButtons(@RequestParam Long menuId,@RequestParam Long roleId){
+        MenuButtonSelect menuButtonSelect = menuButtonService.listButtons(menuId, roleId);
+        return ResponseResult.success(menuButtonSelect);
+    }
     @ResponseBody
     @PostMapping("pageList")
     public ResponseResult pageList(@RequestBody RequestPage<MenuButtonVo> menuButton){

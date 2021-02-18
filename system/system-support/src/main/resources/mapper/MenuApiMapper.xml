@@ -20,13 +20,12 @@
     </sql>
 
     <select id="getMenuApis" resultType="com.yang.system.client.vo.MenuApiVo">
-        select <include refid="Base_Column_List"/>,b.path,c.service_name,c.path as servicePath,c.id as serviceId
+        select <include refid="Base_Column_List"/>,b.api_path
         from menu_api a
         left join api b on a.api_id = b.id and b.dr = 0
-        left join service_info c on b.service_id = c.id and c.dr = 0
         where a.menu_id = #{menuApiVo.menuId}
-        <if test="menuApiVo.serviceName !=null">
-            and c.service_name like concat('%',#{menuApiVo.serviceName},'%')
+        <if test="menuApiVo.apiPath !=null">
+            and b.api_path like concat('%',#{menuApiVo.apiPath},'%')
         </if>
     </select>
 </mapper>

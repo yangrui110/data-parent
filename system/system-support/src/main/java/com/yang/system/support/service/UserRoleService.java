@@ -2,6 +2,7 @@ package com.yang.system.support.service;
 
 import com.yang.system.client.entity.UserRole;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.po.UserRoleBatchMap;
 
 /**
  * <p>
@@ -12,5 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-02-09
  */
 public interface UserRoleService extends IService<UserRole> {
+
+    void updateUserRole(UserRoleBatchMap userRoleBatchMap);
 
 }

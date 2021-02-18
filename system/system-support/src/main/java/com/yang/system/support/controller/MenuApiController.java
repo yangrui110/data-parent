@@ -3,16 +3,14 @@ package com.yang.system.support.controller;
 
 import com.yang.system.client.entity.MenuApi;
 import com.yang.system.client.resp.PageResult;
+import com.yang.system.client.vo.MenuApiSelect;
 import com.yang.system.client.vo.MenuApiVo;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.resp.ResponseResult;
 import com.yang.system.support.service.MenuApiService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,6 +29,15 @@ public class MenuApiController {
     @Autowired
     private MenuApiService menuApiService;
 
+    /**
+     * 根据menuId获取到api信息
+     * */
+    @ResponseBody
+    @GetMapping("listApis")
+    public ResponseResult listButtons(@RequestParam Long menuId,@RequestParam Long roleId){
+        MenuApiSelect menuButtonSelect = menuApiService.listApiByRoleIdAndMenuId(menuId, roleId);
+        return ResponseResult.success(menuButtonSelect);
+    }
     /**
      * 获取到菜单对应的Api数据
      * */

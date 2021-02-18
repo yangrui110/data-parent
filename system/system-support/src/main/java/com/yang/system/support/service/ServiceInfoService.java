@@ -2,6 +2,8 @@ package com.yang.system.support.service;
 
 import com.yang.system.client.entity.ServiceInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.resp.PageResult;
+import com.yang.system.support.resp.RequestPage;
 
 import java.util.List;
 
@@ -19,6 +21,8 @@ public interface ServiceInfoService extends IService<ServiceInfo> {
      * 获取所有路由
      * */
     List<ServiceInfo> listServiceInfos();
+
+    PageResult<ServiceInfo> pageList(RequestPage<ServiceInfo> serviceInfoRequestPage);
 
     /**
      * 更新某个路由

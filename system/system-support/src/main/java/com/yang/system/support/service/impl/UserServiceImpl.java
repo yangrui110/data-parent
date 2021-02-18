@@ -7,20 +7,26 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.yang.system.client.entity.*;
+import com.yang.system.client.po.ModifyPassword;
 import com.yang.system.client.resp.PageResult;
 import com.yang.system.client.vo.MenuTreeVo;
+import com.yang.system.client.vo.UserVo;
 import com.yang.system.support.constant.DrStatus;
 import com.yang.system.support.constant.PermissionType;
 import com.yang.system.support.dao.UserDao;
+import com.yang.system.support.exception.InterException;
 import com.yang.system.support.resp.RequestPage;
 import com.yang.system.support.service.*;
 import com.yang.system.support.util.IdUtils;
 import com.yang.system.support.util.RandomNumAndChar;
+import com.yang.system.support.util.UserInfoUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +46,13 @@ import java.util.stream.Collectors;
 public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserService {
 
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private UserRoleService userRoleService;
+
+    @Autowired
+    private RoleService roleService;
 
     @Autowired
     private RolePermissionService rolePermissionService;
@@ -50,6 +62,12 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     @Autowired
     private MenuService menuService;
+
+    @Autowired
+    private ApiService apiService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public List<MenuTreeVo> getUserMenus(String userId) {
@@ -84,6 +102,57 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
             arrayList.add(vo);
         }
         return arrayList;
+    }
+
+    @Override
+    public List<Role> getUserRoles(String userId) {
+        // 1、获取用户对应的角色
+        List<UserRole> userRoles = userRoleService.list(Wrappers.query(new UserRole()).eq("user_id", userId));
+        if(userRoles.size()==0){
+            log.info("用户没有对应的角色信息");
+            return new ArrayList<>();
+        }
+        List<Long> roleIds = userRoles.stream().map(UserRole::getRoleId).collect(Collectors.toList());
+        List<Role> list = roleService.list(Wrappers.query(new Role()).in("id", roleIds).eq("dr", DrStatus.NORMAL));
+        return list;
+    }
+
+    @Override
+    public List<Api> getUserApis(String userId) {
+        // 1、获取到用户对应的角色
+        List<Role> userRoles = getUserRoles(userId);
+        // 判断是否具有超级角色
+        boolean exitSuper = false;
+        for(Role role: userRoles){
+            if(role.getRoleCode().equals("SUPER_ROLE")){
+                exitSuper=true;
+            }
+        }
+        List<Api> apis= null;
+        if(exitSuper) {
+            apis = apiService.list(Wrappers.query(new Api()).eq("dr", DrStatus.NORMAL));
+        }else {
+            List<Long> roleIds = userRoles.stream().map(Role::getId).collect(Collectors.toList());
+            if (roleIds == null || roleIds.size() == 0) return new ArrayList<>();
+            QueryWrapper<RolePermission> queryWrapper = Wrappers.query(new RolePermission())
+                    .eq("dr", DrStatus.NORMAL)
+                    .in("role_id", roleIds)
+                    .eq("type", PermissionType.API);
+            List<RolePermission> list = rolePermissionService.list(queryWrapper);
+            List<Long> perIds = list.stream().map(RolePermission::getPermissionId).collect(Collectors.toList());
+            if (perIds == null || perIds.size() == 0) return new ArrayList<>();
+            // 2、获取api
+            apis = apiService.list(Wrappers.query(new Api()).in("id", perIds).eq("dr", DrStatus.NORMAL));
+        }
+        return apis;
+    }
+
+    @Override
+    public List<Api> getUserApisByRedis() {
+        // 1、获取到用户
+        UserVo userInfo = UserInfoUtil.getUserInfo(request, redisTemplate);
+        List<Api> apis = userInfo.getApis();
+        return apis;
     }
 
     @Override
@@ -131,5 +200,25 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
         Page<User> page = this.page(new Page<>(requestPage.getPage(), requestPage.getSize()), queryWrapper);
         PageResult<User> pageResult = new PageResult<>(page.getTotal(), page.getRecords());
         return pageResult;
+    }
+
+    @Override
+    public void modifyPassword(ModifyPassword modifyPassword) {
+        // 1、检测原始密码是否一致
+        String oldPassword = modifyPassword.getOldPassword();
+        User user = this.getOne(Wrappers.query(new User()).eq("id", modifyPassword.getUserId()));
+        String salt = user.getSalt();
+        String oldDatabsePassword = user.getPassword();
+        String md5 = Md5Utils.getMD5((oldPassword + salt).getBytes());
+        if(!md5.equalsIgnoreCase(oldDatabsePassword)){
+            throw new InterException(5004,"原始密码不一致，请重新填写");
+        }
+        // 2、构建新密码
+        String newsPassword = modifyPassword.getNewsPassword();
+        String s = Md5Utils.getMD5((newsPassword + salt).getBytes());
+        User newsUser = new User();
+        newsUser.setId(modifyPassword.getUserId());
+        newsUser.setPassword(s);
+        this.updateById(newsUser);
     }
 }

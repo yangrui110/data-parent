@@ -2,6 +2,9 @@ package com.yang.system.support.service;
 
 import com.yang.system.client.entity.RolePermission;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.po.RolePermissionSave;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-02-09
  */
 public interface RolePermissionService extends IService<RolePermission> {
+
+    List<RolePermission> listMenuByRoleId(Long roleId);
+
+    void save(RolePermissionSave rolePermissionSave);
 
 }

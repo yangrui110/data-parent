@@ -1,9 +1,8 @@
 package com.yang.system.support.service;
 
-import com.yang.system.client.entity.Button;
-import com.yang.system.client.entity.Menu;
-import com.yang.system.client.entity.User;
+import com.yang.system.client.entity.*;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.yang.system.client.po.ModifyPassword;
 import com.yang.system.client.resp.PageResult;
 import com.yang.system.client.vo.MenuTreeVo;
 import com.yang.system.support.resp.RequestPage;
@@ -24,6 +23,14 @@ public interface UserService extends IService<User> {
      * 获取用户可操作的菜单
      * */
     List<MenuTreeVo> getUserMenus(String userId);
+
+    List<Role> getUserRoles(String userId);
+    /**
+     * 返回用户对应的APi信息
+     * */
+    List<Api> getUserApis(String userId);
+
+    List<Api> getUserApisByRedis();
     /**
      * 获取用户的按钮权限
      * */
@@ -38,4 +45,8 @@ public interface UserService extends IService<User> {
      * 获取用户列表
      * */
     PageResult<User> pageList(RequestPage<User> requestPage);
+    /**
+     * 修改密码
+     * */
+    void modifyPassword(ModifyPassword modifyPassword);
 }

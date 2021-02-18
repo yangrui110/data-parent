@@ -14,20 +14,5 @@ public class MenuApiVo extends MenuApi {
     /**
      * api路径
      * */
-    private String path;
-
-    /**
-     * 服务名
-     * */
-    private String serviceName;
-
-    /**
-     * 服务Id
-     * */
-    private Long serviceId;
-
-    /**
-     * 服务的访问路径
-     * */
-    private String servicePath;
+    private String apiPath;
 }

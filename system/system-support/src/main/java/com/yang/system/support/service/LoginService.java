@@ -12,4 +12,5 @@ public interface LoginService {
      * */
     String login(String userName,String password);
 
+    void logout(Long userId);
 }
